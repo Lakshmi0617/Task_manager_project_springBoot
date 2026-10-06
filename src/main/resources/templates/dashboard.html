@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Task Tracker Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <!-- Icons -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<div class="header">
+    <h1>
+        <i class="fa-solid fa-clipboard-check"></i>
+        Project Task Tracker System
+    </h1>
+    <h3>(CMTI)</h3>
+</div>
+
+<div class="container-fluid mt-4">
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Tasks</h5>
+                    <h2 id="totalTasks">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Completed</h5>
+                    <h2 id="completedTasks">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">In Progress</h5>
+                    <h2 id="inProgressTasks">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Overdue</h5>
+                    <h2 id="overdueTasks">-</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features + Workflow + Developer Chart -->
+    <div class="row">
+
+        <div class="col-md-4 card-box">
+            <h4>Features</h4>
+            <p><i class="fa-solid fa-list-check clickable-feature" onclick="openCreateTaskModal()" style="cursor: pointer; color: #0052cc;"></i> Create & Manage Tasks</p>
+            <p><i class="fa-solid fa-user"></i> Assign Developers</p>
+            <p><i class="fa-solid fa-chart-line"></i> Track Task Progress</p>
+            <p><i class="fa-solid fa-folder-open"></i> Upload Project Folder</p>
+            <p><i class="fa-solid fa-file"></i> Attach Documents</p>
+            <p><i class="fa-solid fa-flag"></i> Priority Management</p>
+            <p><i class="fa-solid fa-calendar"></i> Due Date Tracking</p>
+            <p><i class="fa-solid fa-comments"></i> Comments & Reviews</p>
+        </div>
+
+        <div class="col-md-4 card-box">
+            <h4>Task Workflow</h4>
+            <div class="workflow">
+                <span class="badge bg-primary">TO_DO</span>
+                <span class="badge bg-warning">IN_PROGRESS</span>
+                <span class="badge bg-info">IN_REVIEW</span>
+                <span class="badge bg-success">COMPLETED</span>
+            </div>
+            <hr>
+            <h5>Priority Levels</h5>
+            <div class="priority-workflow">
+                <span class="badge bg-danger">HIGH</span>
+                <span class="badge bg-warning text-dark">MEDIUM</span>
+                <span class="badge bg-secondary">LOW</span>
+            </div>
+        </div>
+
+        <div class="col-md-4 card-box">
+            <h4>📊 Developer Progress</h4>
+            <div class="mb-3">
+                <select id="developerSelect" class="form-select" onchange="updateDeveloperChart()">
+                    <option value="">Select Developer</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                <canvas id="developerChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Dashboard Table -->
+    <div class="card-box mt-4">
+        <h4>Project Dashboard</h4>
+
+        <div class="table-responsive">
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Task</th>
+                        <th>Description</th>
+                        <th>Developer</th>
+                        <th>Team Lead</th>
+                        <th>Manager</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Due Date</th>
+                        <th>Sprint</th>
+                        <th>Uploaded File</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="taskTableBody">
+                    <tr th:each="task : ${tasks}">
+                        <td th:text="${task.id}"></td>
+                        <td th:text="${task.title}"></td>
+                        <td th:text="${task.description} ?: '-'"></td>
+                        <td th:text="${task.developer} ?: '-'"></td>
+                        <td th:text="${task.teamLead} ?: '-'"></td>
+                        <td th:text="${task.manager} ?: '-'"></td>
+                        <td>
+                            <span th:if="${task.priority == 'HIGH'}" class="badge bg-danger" th:text="${task.priority}"></span>
+                            <span th:if="${task.priority == 'MEDIUM'}" class="badge bg-warning text-dark" th:text="${task.priority}"></span>
+                            <span th:if="${task.priority == 'LOW'}" class="badge bg-secondary" th:text="${task.priority}"></span>
+                        </td>
+                        <td>
+                            <span th:if="${task.status == 'TO_DO'}" class="badge bg-primary" th:text="${task.status}"></span>
+                            <span th:if="${task.status == 'IN_PROGRESS'}" class="badge bg-warning" th:text="${task.status}"></span>
+                            <span th:if="${task.status == 'IN_REVIEW'}" class="badge bg-info" th:text="${task.status}"></span>
+                            <span th:if="${task.status == 'COMPLETED'}" class="badge bg-success" th:text="${task.status}"></span>
+                            <span th:unless="${task.status}" class="badge bg-secondary" th:text="'UNKNOWN'"></span>
+                        </td>
+                        <td>
+                            <span th:if="${task.dueDate}" 
+                                  th:class="${task.isOverdue()} ? 'text-danger fw-bold' : ''"
+                                  th:text="${#temporals.format(task.dueDate, 'MMM dd, yyyy')}"></span>
+                            <span th:unless="${task.dueDate}">-</span>
+                            <div th:if="${task.isOverdue()}" class="text-danger small">
+                                <i class="fa-solid fa-exclamation-triangle"></i> 
+                                <span th:text="${task.getDaysOverdue() + ' days overdue'}"></span>
+                            </div>
+                        </td>
+                        <td th:text="${task.sprintName} ?: '-'"></td>
+                        <td class="file-name-cell">
+                            <div th:if="${task.uploadedFile}">
+                                <span th:text="${#strings.length(task.uploadedFile) > 15 ? #strings.substring(task.uploadedFile, 0, 12) + '...' : task.uploadedFile}" 
+                                      th:title="${task.uploadedFile}"></span>
+                                <button type="button" class="btn btn-sm btn-outline-info ms-2" onclick="viewTaskFiles(this)" 
+                                        th:data-id="${task.id}" title="View All Files">
+                                    <i class="fa-solid fa-folder-open"></i>
+                                </button>
+                            </div>
+                            <span th:unless="${task.uploadedFile}">-</span>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary" onclick="editTask(this)" 
+                                        th:data-id="${task.id}" th:data-title="${task.title}" th:data-description="${task.description}"
+                                        th:data-developer="${task.developer}" th:data-teamlead="${task.teamLead}" th:data-manager="${task.manager}"
+                                        th:data-priority="${task.priority}" th:data-duedate="${task.dueDate}" th:data-sprint="${task.sprintName}"
+                                        th:data-createdby="${task.createdBy}">
+                                    <i class="fa-solid fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="previousStatus(this)" 
+                                        th:data-id="${task.id}" title="Previous Status">
+                                    <i class="fa-solid fa-backward"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="nextStatus(this)" 
+                                        th:data-id="${task.id}" title="Next Status">
+                                    <i class="fa-solid fa-forward"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-info" onclick="addComment(this)" 
+                                        th:data-id="${task.id}" th:data-title="${task.title}">
+                                    <i class="fa-solid fa-comment"></i>
+                                </button>
+                                <label class="btn btn-outline-secondary mb-0">
+                                    <i class="fa-solid fa-upload"></i>
+                                    <input type="file" style="display: none;" multiple th:onchange="uploadMultipleFiles(this, [[${task.id}]])">
+                                </label>
+                                <button th:if="${task.uploadedFile}" type="button" class="btn btn-outline-warning" onclick="downloadFile(this)" 
+                                        th:data-id="${task.id}">
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" onclick="deleteTask(this)" 
+                                        th:data-id="${task.id}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- Create Task Modal -->
+<div class="modal fade" id="createTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createTaskModalForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="modalTaskTitle" class="form-label">Task Title</label>
+                                <input type="text" class="form-control" id="modalTaskTitle" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="modalTaskDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="modalTaskDescription" rows="3"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="modalTaskDeveloper" class="form-label">Developer</label>
+                                        <input type="text" class="form-control" id="modalTaskDeveloper">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="modalTaskTeamLead" class="form-label">Team Lead</label>
+                                        <input type="text" class="form-control" id="modalTaskTeamLead">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="modalTaskManager" class="form-label">Manager</label>
+                                        <input type="text" class="form-control" id="modalTaskManager">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="modalTaskPriority" class="form-label">Priority</label>
+                                        <select class="form-select" id="modalTaskPriority">
+                                            <option value="MEDIUM">MEDIUM</option>
+                                            <option value="HIGH">HIGH</option>
+                                            <option value="LOW">LOW</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="modalTaskDueDate" class="form-label">Due Date</label>
+                                        <input type="date" class="form-control" id="modalTaskDueDate">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label for="modalTaskSprint" class="form-label">Sprint</label>
+                                        <input type="text" class="form-control" id="modalTaskSprint" placeholder="Sprint 1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="modalTaskCreatedBy" class="form-label">Created By</label>
+                                <input type="text" class="form-control" id="modalTaskCreatedBy">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createTaskFromModal()">Create Task</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Viewer Modal -->
+<div class="modal fade" id="fileViewerModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Task Files</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="fileListContainer">
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Task</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTaskForm">
+                    <input type="hidden" id="editTaskId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editTaskTitle" class="form-label">Task Title</label>
+                                <input type="text" class="form-control" id="editTaskTitle" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaskDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="editTaskDescription" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaskDeveloper" class="form-label">Developer</label>
+                                <input type="text" class="form-control" id="editTaskDeveloper">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaskTeamLead" class="form-label">Team Lead</label>
+                                <input type="text" class="form-control" id="editTaskTeamLead">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editTaskManager" class="form-label">Manager</label>
+                                <input type="text" class="form-control" id="editTaskManager">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaskPriority" class="form-label">Priority</label>
+                                <select class="form-select" id="editTaskPriority">
+                                    <option value="HIGH">HIGH</option>
+                                    <option value="MEDIUM">MEDIUM</option>
+                                    <option value="LOW">LOW</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaskDueDate" class="form-label">Due Date</label>
+                                <input type="date" class="form-control" id="editTaskDueDate">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editTaskSprint" class="form-label">Sprint</label>
+                                <input type="text" class="form-control" id="editTaskSprint">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveTask()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Comment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="commentForm">
+                    <input type="hidden" id="commentTaskId">
+                    <div class="mb-3">
+                        <label for="commentText" class="form-label">Comment</label>
+                        <textarea class="form-control" id="commentText" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentAuthor" class="form-label">Author</label>
+                        <input type="text" class="form-control" id="commentAuthor" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveComment()">Add Comment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script src="/app.js"></script>
+
+</body>
+</html>

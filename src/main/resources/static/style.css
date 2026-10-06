@@ -1,0 +1,211 @@
+body {
+    background: #eef6ff;
+    font-family: Arial;
+    margin: 0;
+    padding: 0;
+}
+
+.header {
+    background: linear-gradient(to right, #0052cc, #007bff);
+    color: white;
+    text-align: center;
+    padding: 30px;
+}
+
+.card-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0px 3px 10px lightgray;
+    text-align: left;
+}
+
+.card-box h4 {
+    color: #0052cc;
+    font-weight: bold;
+}
+
+.workflow span {
+    margin: 5px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* Fix for chart container to prevent scrolling issues */
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+#developerChart {
+    max-height: 250px !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: 250px !important;
+}
+
+/* Prevent body scrolling issues */
+html, body {
+    overflow-x: hidden;
+    height: 100%;
+}
+
+/* Ensure proper card box sizing */
+.card-box {
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
+}
+
+/* Priority workflow styling */
+.priority-workflow span {
+    margin: 3px;
+    padding: 8px;
+    font-size: 12px;
+}
+
+/* Clickable feature icon */
+.clickable-feature {
+    cursor: pointer;
+    color: #0052cc;
+    transition: color 0.3s ease;
+}
+
+.clickable-feature:hover {
+    color: #007bff;
+}
+
+/* Table responsive fixes */
+.table-responsive {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.table {
+    width: 100%;
+    min-width: 1200px; /* Minimum width for all columns */
+}
+
+/* File name cell styling */
+.file-name-cell {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Button group fixes */
+.btn-group {
+    flex-wrap: wrap;
+    gap: 2px;
+}
+
+.btn-group .btn {
+    margin: 1px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .card-box {
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .table {
+        min-width: 800px;
+        font-size: 12px;
+    }
+    
+    .btn-group .btn {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+    
+    .btn-group .btn i {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        padding: 20px 10px;
+    }
+    
+    .header h1 {
+        font-size: 20px;
+    }
+    
+    .header h3 {
+        font-size: 14px;
+    }
+    
+    .card-box {
+        padding: 10px;
+    }
+    
+    .table {
+        min-width: 600px;
+        font-size: 11px;
+    }
+    
+    .btn-group .btn {
+        padding: 2px 4px;
+        font-size: 10px;
+    }
+    
+    .btn-group .btn i {
+        font-size: 8px;
+    }
+}
+
+/* Modal responsive fixes */
+.modal-dialog {
+    max-width: 90vw;
+    margin: 10px auto;
+}
+
+@media (max-width: 768px) {
+    .modal-dialog {
+        max-width: 95vw;
+        margin: 5px auto;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .form-label {
+        font-size: 12px;
+        margin-bottom: 4px;
+    }
+    
+    .form-control, .form-select {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+}
+
+/* Left alignment for all content */
+.container-fluid {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.col-md-4, .col-md-3, .col-md-6 {
+    padding-left: 10px;
+    padding-right: 10px;
+}
